@@ -1,0 +1,35 @@
+{
+  "name": "three-sdk",
+  "version": "1.0.0",
+  "description": "Beheyt 3D SDK (prebuilt)",
+  "license": "UNLICENSED",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/three-sdk.umd.cjs",
+  "module": "./dist/three-sdk.js",
+  "types": "./dist/public.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/public.d.ts",
+      "import": "./dist/three-sdk.js",
+      "require": "./dist/three-sdk.umd.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "@react-three/drei": "^10.0.0",
+    "@react-three/fiber": "^9.0.0",
+    "mobx": "^6.0.0",
+    "mobx-react-lite": "^4.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "three": "^0.182.0"
+  },
+  "peerDependenciesMeta": {
+    "react-dom": {
+      "optional": false
+    }
+  }
+}
