@@ -2,6 +2,11 @@ import type { CSSProperties, FC, RefAttributes } from "react";
 
 export type FinishType = "Polished" | "Matte" | "Brushed";
 
+export declare enum ViewerSource {
+  WEBSITE = "website",
+  CONFIG = "config",
+}
+
 export interface RingSceneProps {
   collection: string;
   modelId: string;
@@ -86,6 +91,8 @@ export type ViewerViewManagerAPI = {
   setGlbUrl: (glbUrl: string) => void;
   setJsonUrl: (jsonUrl: string) => void;
   setMeshInfoJson: (meshInfoJson: MeshInfoJson) => void;
+  source: ViewerSource;
+  setSource: (source: ViewerSource) => void;
 };
 
 export declare class MeshInfo {
@@ -149,6 +156,7 @@ export type Viewer3DProps = {
   diamondEnvPath?: string;
   envPath?: string;
   style?: CSSProperties;
+  source?: ViewerSource;
 };
 
 export declare const Viewer3D: import("react").ForwardRefExoticComponent<
