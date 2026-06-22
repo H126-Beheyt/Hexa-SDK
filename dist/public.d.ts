@@ -1,6 +1,6 @@
-import type { CSSProperties, FC, RefAttributes } from 'react';
+import type { CSSProperties, FC, RefAttributes } from "react";
 
-export type FinishType = 'polished' | 'matte';
+export type FinishType = "Polished" | "Matte" | "Brushed";
 
 export interface RingSceneProps {
   collection: string;
@@ -23,20 +23,60 @@ export type MeshInfoJson = {
   availableColors: string[];
 };
 
+export type ViewerTextures = {
+  aoGold?: string;
+  aoSilver?: string;
+  aoEngrave?: string;
+  normalBase?: string;
+  normalFinishing?: string;
+};
+
 export type ViewerRingManagerAPI = {
-  activeVariation: string;
-  collection: string;
+  modelUrl: string;
   colorHex: string;
+  baseColorHex: string;
+  finishingColorHex: string;
+  engravingColorHex: string;
   finish: FinishType;
-  initModel: (collection: string, modelId: string, variations: string[]) => void;
-  modelId: string;
-  roughness: number;
-  setActiveVariation: (variation: string) => void;
-  setDiamondsVisible: (visible: boolean) => void;
-  setFinish: (finish: FinishType) => void;
-  setMetalColor: (hex: string) => void;
   showDiamond: boolean;
-  variations: string[];
+  roughness: number;
+  textures: ViewerTextures | null;
+  currentView: number;
+  engravingText: string;
+  engravingSymbol: string | null;
+  engravingFont: string;
+  bevelWidth: number;
+  engravingDepth: number;
+  edgeSoftness: number;
+  normalStrength: number;
+  aoStrength: number;
+  strokeWidth: number;
+  /** True once the active variation's model has finished loading and rendered. */
+  isLoaded: boolean;
+  initModel: (modelUrl: string) => void;
+  setMetalColor: (hex: string) => void;
+  setMeshColors: (colors: {
+    base: string;
+    finishing: string;
+    engraving: string;
+  }) => void;
+  setFinish: (finish: FinishType) => void;
+  setDiamondsVisible: (visible: boolean) => void;
+  setTextures: (textures: ViewerTextures | null) => void;
+  setCurrentView: (currentView: number) => void;
+  setEngravingText: (text: string) => void;
+  setEngravingSymbol: (symbol: string | null) => void;
+  setEngravingFont: (font: string) => void;
+  setBevelWidth: (val: number) => void;
+  setEngravingDepth: (val: number) => void;
+  setEdgeSoftness: (val: number) => void;
+  setNormalStrength: (val: number) => void;
+  setAoStrength: (val: number) => void;
+  setStrokeWidth: (val: number) => void;
+  engravingCanvas: HTMLCanvasElement | null;
+  normalMapCanvas: HTMLCanvasElement | null;
+  setEngravingCanvas: (canvas: HTMLCanvasElement | null) => void;
+  setNormalMapCanvas: (canvas: HTMLCanvasElement | null) => void;
 };
 
 export type ViewerViewManagerAPI = {
@@ -48,30 +88,45 @@ export type ViewerViewManagerAPI = {
   setMeshInfoJson: (meshInfoJson: MeshInfoJson) => void;
 };
 
+export declare class MeshInfo {
+  constructor(id: string, name: string, mesh: import("three").Mesh);
+  get id(): string;
+  get name(): string;
+  get item(): import("three").Mesh;
+  get isVisible(): boolean;
+  setIsVisible(isVisible: boolean): void;
+  setMesh(mesh: import("three").Mesh): void;
+  changeColor(color: string): void;
+  static parseMeshInfo(mesh: import("three").Mesh): MeshInfo;
+}
+
 export type ViewerMeshManagerAPI = {
-  groupRef: import('three').Group | null;
-  meshInfos: unknown[];
-  setGroupRef: (group: import('three').Group) => void;
-  setMeshInfos: (meshInfos: unknown[]) => void;
+  groupRef: import("three").Group | null;
+  meshInfos: MeshInfo[];
+  setGroupRef: (group: import("three").Group) => void;
+  setMeshInfos: (meshInfos: MeshInfo[]) => void;
 };
 
 export type ViewerCameraManagerAPI = {
-  cameraRef: unknown;
-  focusCameraTo: (...args: unknown[]) => void;
+  cameraRef: any;
+  focusCameraTo: (obj: import("three").Object3D[]) => void;
   resetCameraToRef: () => void;
-  setCameraRef: (ref: unknown) => void;
+  setCameraRef: (ref: any) => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  reset: () => void;
 };
 
 export type ViewerEnvManagerAPI = {
-  clearMap: () => void;
+  clearMap: (mapType: string) => void;
   envIntensity: number;
-  envRotation: [number, number, number];
+  envRotation: { x: number; y: number; z: number };
   envVisibility: boolean;
-  environmentTexture: unknown;
-  handleEnvUpload: (file: File) => void;
-  setEnvironmentTexture: (texture: unknown) => void;
+  environmentTexture: import("three").Texture | null;
+  handleEnvUpload: (file: File) => Promise<void>;
+  setEnvironmentTexture: (texture: import("three").Texture) => void;
   setEnvIntensity: (intensity: number) => void;
-  setEnvRotation: (rotation: [number, number, number]) => void;
+  setEnvRotation: (rotation: { x: number; y: number; z: number }) => void;
   setEnvVisibility: (visible: boolean) => void;
 };
 
@@ -96,11 +151,13 @@ export type Viewer3DProps = {
   style?: CSSProperties;
 };
 
-export declare const Viewer3D: import('react').ForwardRefExoticComponent<
+export declare const Viewer3D: import("react").ForwardRefExoticComponent<
   Viewer3DProps & RefAttributes<ViewerAPI>
 >;
 
 /** Same component as `Viewer3D` (SDK build re-exports this name). */
-export declare const SDKViewer: typeof Viewer3D;
+export declare const SDKViewer: import("react").ForwardRefExoticComponent<
+  Viewer3DProps & RefAttributes<ViewerAPI>
+>;
 
 export declare const RingScene: FC<RingSceneProps>;
