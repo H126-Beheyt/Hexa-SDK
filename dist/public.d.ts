@@ -10,7 +10,7 @@ export interface RingSceneProps {
   colorHex?: string;
   finish?: FinishType;
   showDiamond?: boolean;
-  /** Path to the scene HDR environment. Defaults to /env/08.hdr */
+  /** Path to the scene HDR environment. Defaults to /env/08.exr */
   envPath?: string;
   /** Path to the HDR used for diamond refraction. Defaults to /08.hdr */
   diamondEnvPath?: string;

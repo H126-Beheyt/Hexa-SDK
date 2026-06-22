@@ -6559,7 +6559,7 @@ const rr = ze(({ children: a }) => {
       backgroundColor: a = "#f2efe8",
       className: e,
       diamondEnvPath: t = "/08.hdr",
-      envPath: s = "/env/08.hdr",
+      envPath: s = "/env/08.exr",
       style: n
     }, i) => {
       const [r] = Ds(() => new sr());
