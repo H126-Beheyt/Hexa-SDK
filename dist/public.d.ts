@@ -36,6 +36,11 @@ export type ViewerTextures = {
   normalFinishing?: string;
 };
 
+export type CollectionModelInfo = {
+  modelUrl: string;
+  textures: ViewerTextures | null;
+};
+
 export type ViewerRingManagerAPI = {
   modelUrl: string;
   colorHex: string;
@@ -58,6 +63,12 @@ export type ViewerRingManagerAPI = {
   strokeWidth: number;
   /** True once the active variation's model has finished loading and rendered. */
   isLoaded: boolean;
+  isTransitioning: boolean;
+  animationDuration: number;
+  collectionModels: CollectionModelInfo[];
+  setTransitioning: (val: boolean) => void;
+  setAnimationDuration: (val: number) => void;
+  setCollectionModels: (models: CollectionModelInfo[]) => void;
   initModel: (modelUrl: string) => void;
   setMetalColor: (hex: string) => void;
   setMeshColors: (colors: {
