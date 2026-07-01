@@ -34,6 +34,8 @@ export type ViewerTextures = {
   aoEngrave?: string;
   normalBase?: string;
   normalFinishing?: string;
+  noDiamondBase?: string;
+  noDiamondFinishing?: string;
 };
 
 export type CollectionModelInfo = {
