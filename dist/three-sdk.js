@@ -6400,7 +6400,7 @@ class Ha {
   _showDiamond = !0;
   _textures = null;
   _currentView = 1;
-  _engravingText = "All we need is love";
+  _engravingText = "";
   _engravingSymbol = null;
   _engravingFont = "Arial, sans-serif";
   _engravingCanvas = null;
@@ -6601,7 +6601,7 @@ const za = {
     fitBoxScale: 1.35
   },
   config: {
-    canvasColor: "#f8f7f2",
+    canvasColor: "#f2efe8",
     minDistance: 5,
     maxDistance: 10,
     homeDistance: 8,
@@ -6842,7 +6842,7 @@ const Pi = Ye(({ children: c }) => {
     showDiamond: i = !0,
     envPath: o = "/env/08.exr",
     diamondEnvPath: a = "/08.hdr",
-    backgroundColor: u = "#f8f7f2"
+    backgroundColor: u = "#f2efe8"
   }) => {
     const l = De(new Ii()).current, { ringManager: d } = l.design3DManager, h = (m, v, p) => {
       const _ = m.charAt(0).toUpperCase() + m.slice(1);
