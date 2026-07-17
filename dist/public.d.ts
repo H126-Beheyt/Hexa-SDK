@@ -73,6 +73,10 @@ export type ViewerRingManagerAPI = {
   setCollectionModels: (models: CollectionModelInfo[]) => void;
   initModel: (modelUrl: string) => void;
   setMetalColor: (hex: string) => void;
+  homeRotation: { x: number; y: number; z: number } | null;
+  setHomeRotation: (x: number, y: number, z: number) => void;
+  engraveRotation: { x: number; y: number; z: number } | null;
+  setEngraveRotation: (x: number, y: number, z: number) => void;
   setMeshColors: (colors: {
     base: string;
     finishing: string;
