@@ -3038,6 +3038,7 @@ const Ko = (
   uniform sampler2D tDiffuse;
   uniform vec2      resolution;
   uniform sampler2D envMap;
+  uniform float     uEnvMapIntensity;
 
   uniform vec3  uColor;
   uniform float uIOR;
@@ -3077,7 +3078,7 @@ const Ko = (
   }
 
   vec3 sampleEnv(vec3 dir) {
-    return texture(envMap, equirectUV(dir)).rgb;
+    return texture(envMap, equirectUV(dir)).rgb * uEnvMapIntensity;
   }
 
   vec3 sampleScreen(vec2 uv) {
@@ -3212,7 +3213,11 @@ const Ko = (
     vec3 facetHighlight  = uHighlightColor * highlightMask * 5.0;
 
     vec3 finalColor = finalRefract + surfaceGlint + facetHighlight;
-    pc_fragColor    = vec4(finalColor, 1.0);
+    vec4 outColor = vec4(finalColor, 1.0);
+    #ifdef TONE_MAPPING
+      outColor.rgb = toneMapping(outColor.rgb);
+    #endif
+    pc_fragColor = linearToOutputTexel(outColor);
   }
 `
 );
@@ -3234,7 +3239,8 @@ class Yo extends L.ShaderMaterial {
     highlightColor: x = 16777215,
     highlightTolerance: y = 1,
     attenuationColor: m = 16777215,
-    attenuationDistance: _ = 1
+    attenuationDistance: _ = 1,
+    envMapIntensity: __ei = 1
   }) {
     const p = new Lo();
     p.updateFrom(t), super({
@@ -3246,6 +3252,7 @@ class Yo extends L.ShaderMaterial {
         tDiffuse: { value: n },
         resolution: { value: r },
         envMap: { value: s },
+        uEnvMapIntensity: { value: __ei },
         uColor: { value: new L.Color(l) },
         uIOR: { value: i },
         uAberration: { value: o },
@@ -3296,6 +3303,12 @@ class Yo extends L.ShaderMaterial {
   }
   set highlightTolerance(e) {
     this.uniforms.uHighlightTolerance.value = e;
+  }
+  get envMapIntensity() {
+    return this.uniforms.uEnvMapIntensity.value;
+  }
+  set envMapIntensity(e) {
+    this.uniforms.uEnvMapIntensity.value = e;
   }
   get attenuationColor() {
     return this.uniforms.uAttenuationColor.value;
@@ -4085,7 +4098,7 @@ const Jo = $e(({ textOffsetX: c = 0 }) => {
       ee.current.normalMap = null, se.current.normalMap = null, Z.current.normalMap = null, T.traverse(($) => {
         if ($ instanceof L.Mesh) {
           const C = $;
-          C.geometry && C.geometry.computeVertexNormals();
+          C.geometry && (__sdkIsGem(C) ? C.geometry.computeVertexNormals() : __sdkWeldSeamNormals(C.geometry));
           const te = (_e, we) => {
             let ot = _e;
             const Rn = we.toLowerCase();
@@ -6757,6 +6770,8 @@ const Ci = $e(({ children: c }) => {
             {
               frameloop: "always",
               shadows: !0,
+              dpr: [2, 3],
+              gl: { antialias: !0, powerPreference: "high-performance" },
               camera: { fov: 35, position: [0, 0, a.designManager.viewManager.settings.homeDistance] },
               children: [
                 /* @__PURE__ */ Y.jsx(
@@ -6827,6 +6842,8 @@ const Ci = $e(({ children: c }) => {
       {
         frameloop: "always",
         shadows: !0,
+        dpr: [2, 3],
+        gl: { antialias: !0, powerPreference: "high-performance" },
         camera: { fov: 35, position: [0, 0, 8] },
         children: [
           /* @__PURE__ */ Y.jsx("color", { attach: "background", args: [u] }),
@@ -6867,3 +6884,37 @@ export {
   nc as Viewer3D,
   Ii as ViewerSource
 };
+
+function __sdkInChain(o, t) {
+  for (; o; ) {
+    if (o.name && o.name.toLowerCase().includes(t)) return !0;
+    o = o.parent;
+  }
+  return !1;
+}
+function __sdkIsGem(m) {
+  return !__sdkInChain(m, "nodiamond") && (__sdkInChain(m, "diamond") || __sdkInChain(m, "diam_centr"));
+}
+function __sdkWeldSeamNormals(g) {
+  const pos = g.getAttribute("position"), nor = g.getAttribute("normal"), uv = g.getAttribute("uv");
+  if (!pos || !nor || !uv) { g.computeVertexNormals(); return; }
+  if (g.userData.seamWelded) return;
+  const groups = new Map();
+  for (let i = 0; i < pos.count; i++) {
+    const k = [Math.round(pos.getX(i) * 1e4), Math.round(pos.getY(i) * 1e4), Math.round(pos.getZ(i) * 1e4), Math.round(uv.getX(i) * 1e3)].join(",");
+    const l = groups.get(k);
+    l ? l.push(i) : groups.set(k, [i]);
+  }
+  const a = new L.Vector3(), b = new L.Vector3();
+  groups.forEach((ids) => {
+    if (ids.length < 2) return;
+    const low = ids.filter((i) => uv.getY(i) < 0.5), high = ids.filter((i) => uv.getY(i) >= 0.5);
+    low.forEach((i) => {
+      a.fromBufferAttribute(nor, i);
+      let best = -1, bd = 0.8;
+      high.forEach((j) => { b.fromBufferAttribute(nor, j); const d = a.dot(b); if (d > bd) { bd = d; best = j; } });
+      if (best >= 0) { b.fromBufferAttribute(nor, best); a.add(b).normalize(); nor.setXYZ(i, a.x, a.y, a.z); nor.setXYZ(best, a.x, a.y, a.z); }
+    });
+  });
+  nor.needsUpdate = !0; g.userData.seamWelded = !0;
+}
